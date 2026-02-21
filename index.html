@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BIP110 Adoption Tracker</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #f0f2f5; margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 1000px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        h1 { margin-top: 0; color: #1a1a1a; }
+        .stats { font-size: 0.9em; color: #666; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>BIP110 (P2P V2) Adoption</h1>
+        <div id="last-updated" class="stats">Loading data...</div>
+        <canvas id="bipChart"></canvas>
+    </div>
+
+    <script>
+        Papa.parse("data.csv", {
+            download: true,
+            header: true,
+            skipEmptyLines: true,
+            complete: function(results) {
+                const cleanData = results.data;
+                
+                // Extracting our three columns
+                const labels = cleanData.map(row => row.timestamp);
+                const counts = cleanData.map(row => row.node_count);
+                const percentages = cleanData.map(row => row.percentage);
+
+                // Show the last update time on the page
+                if (labels.length > 0) {
+                    const lastUpdate = labels[labels.length - 1];
+                    const lastCount = counts[counts.length - 1];
+                    const lastPercent = percentages[percentages.length - 1];
+                    document.getElementById('last-updated').innerHTML = 
+                        `Last Scrape: <strong>${lastUpdate}</strong> | Current Nodes: <strong>${lastCount}</strong> (${lastPercent}%)`;
+                }
+
+                const ctx = document.getElementById('bipChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'BIP110 Nodes',
+                            data: counts,
+                            borderColor: '#f7931a', // Bitcoin Orange
+                            backgroundColor: 'rgba(247, 147, 26, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.3,
+                            pointRadius: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: { title: { display: true, text: 'Time' } },
+                            y: { title: { display: true, text: 'Number of Nodes' } }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
