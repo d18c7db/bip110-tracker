@@ -1,8 +1,8 @@
-name: Hourly Scrape
+name: Scheduled Scraper
 
 on:
   schedule:
-    - cron: '35 * * * *'
+    - cron: '36 2,8,14,21 * * *'
   workflow_dispatch:
 
 jobs:
