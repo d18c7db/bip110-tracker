@@ -7,26 +7,24 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <style>
-        /* Color Variables */
+        /* Color Variables - Adjusted to default to Dark */
         :root {
-            --bg: #f8f9fa; --card: #ffffff; --text: #1a1a1a; --sub: #666; --border: #cccccc;
+            --bg: #ffffff; --card: #f8f9fa; --text: #1a1a1a; --sub: #666; --border: #cccccc;
         }
-        [data-theme="dark"] {
+        /* When NO attribute is present or 'dark' is present, use these colors */
+        html[data-theme="dark"] {
             --bg: #0f1113; --card: #1c1e22; --text: #e0e0e0; --sub: #999; --border: #444;
+        }
+        /* Use these if 'light' is specifically chosen */
+        html[data-theme="light"] {
+            --bg: #f8f9fa; --card: #ffffff; --text: #1a1a1a; --sub: #666; --border: #cccccc;
         }
 
         body { font-family: sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; transition: 0.3s; }
         .container { max-width: 900px; margin: 20px auto; background: var(--card); padding: 25px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        
-        /* This makes the Title and Button sit side-by-side */
         .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #f7931a; padding-bottom: 10px; }
-        
-        .toggle-btn { 
-            padding: 10px 15px; cursor: pointer; border-radius: 8px; font-weight: bold;
-            border: 2px solid #f7931a; background: transparent; color: var(--text);
-        }
+        .toggle-btn { padding: 10px 15px; cursor: pointer; border-radius: 8px; font-weight: bold; border: 2px solid #f7931a; background: transparent; color: var(--text); }
         .toggle-btn:hover { background: #f7931a; color: white; }
-
         .stats-box { font-size: 1.1em; color: var(--text); margin: 15px 0; padding: 15px; border-radius: 6px; background: rgba(247, 147, 26, 0.1); border: 1px solid #f7931a; }
         .info-section { margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border); line-height: 1.6; }
         h1, h2 { margin: 0; color: #f7931a; }
@@ -48,4 +46,78 @@
         </div>
 
         <div class="info-section">
-            <h2>About BIP-
+            <h2>About BIP-110</h2>
+            <p><strong>Protecting Bitcoin's Purpose:</strong> This proposal seeks to temporarily limit the size of data fields at the consensus level.</p>
+            <ul>
+                <li><strong>Correct Distorted Incentives:</strong> Fixing issues caused by standardizing support for arbitrary data.</li>
+                <li><strong>Refocus Priorities:</strong> Improving Bitcoin as a global, decentralized monetary system (money).</li>
+            </ul>
+            <p>Read the full proposal at <a href="https://bip110.org/">BIP110.org</a></p>
+        </div>
+    </div>
+
+    <script>
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+
+        // Initialize theme based on saved preference, otherwise default to dark
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+
+        Papa.parse("./data.csv", {
+            download: true, header: true, skipEmptyLines: true, dynamicTyping: true,
+            complete: function(results) {
+                const data = results.data.filter(row => row.timestamp);
+                const labels = data.map(row => row.timestamp);
+                const counts = data.map(row => row.node_count);
+                const percentages = data.map(row => row.percentage);
+
+                if (labels.length > 0) {
+                    document.getElementById('last-updated').innerHTML = 
+                        `<strong>Latest Data:</strong> ${counts[counts.length-1]} nodes signalling (${percentages[percentages.length-1]}% of network)`;
+                    
+                    const ctx = document.getElementById('bipChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [
+                                {
+                                    label: 'Node Count',
+                                    data: counts,
+                                    borderColor: '#f7931a',
+                                    backgroundColor: 'rgba(247, 147, 26, 0.2)',
+                                    yAxisID: 'y',
+                                    fill: true,
+                                    tension: 0.3
+                                },
+                                {
+                                    label: 'Network %',
+                                    data: percentages,
+                                    borderColor: '#4b7bec',
+                                    yAxisID: 'y1',
+                                    borderDash: [5, 5],
+                                    tension: 0.3
+                                }
+                            ]
+                        },
+                        options: { 
+                            responsive: true, 
+                            maintainAspectRatio: false,
+                            scales: { 
+                                y: { type: 'linear', position: 'left', title: { display: true, text: 'Nodes' }, grid: { color: '#333' } },
+                                y1: { type: 'linear', position: 'right', title: { display: true, text: 'Network %' }, grid: { drawOnChartArea: false } },
+                                x: { grid: { color: '#333' } }
+                            } 
+                        }
+                    });
+                }
+            }
+        });
+    </script>
+</body>
+</html>
