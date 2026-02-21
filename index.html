@@ -15,7 +15,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>BIP110 (P2P V2) Adoption</h1>
+        <h1>BIP110 Adoption Tracker</h1>
         <div id="last-updated" class="stats">Loading data...</div>
         <canvas id="bipChart"></canvas>
     </div>
@@ -24,11 +24,9 @@
     Papa.parse("./data.csv", {
         download: true,
         header: true,
-        dynamicTyping: true, // Automatically converts strings to numbers
+        dynamicTyping: true,
         skipEmptyLines: true,
         complete: function(results) {
-            console.log("Parsed Data:", results.data); // Debugging line
-
             const cleanData = results.data.filter(row => row.timestamp);
             const labels = cleanData.map(row => row.timestamp);
             const counts = cleanData.map(row => row.node_count);
@@ -44,10 +42,8 @@
                     data: {
                         labels: labels,
                         datasets: [{
-                            label: 'BIP110 Nodes',
-                            data: counts,
-                            borderColor: '#f7931a',
-                            fill: false
+                            label: 'BIP110 Nodes', data: counts,
+                            borderColor: '#f7931a', fill: false
                         }]
                     }
                 });
