@@ -11,7 +11,7 @@ def scrape_bip110():
         response = requests.get(url, headers=headers)
         # Search for pattern: (0 nodes/0.0%)
         # Group 1: Node Count, Group 2: Percentage
-        pattern = r"\((\d+)\s+nodes/(\d+\.\d+)%\)"
+        pattern = r"\((\d+)\s+nodes/([\d\.]+)%\)"
         match = re.search(pattern, response.text)
         
         if match:
