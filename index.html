@@ -20,28 +20,24 @@
         <canvas id="bipChart"></canvas>
     </div>
 
-    <script>
-        Papa.parse("data.csv", {
-            download: true,
-            header: true,
-            skipEmptyLines: true,
-            complete: function(results) {
-                const cleanData = results.data;
+<script>
+    Papa.parse("./data.csv", {
+        download: true,
+        header: true,
+        dynamicTyping: true, // Automatically converts strings to numbers
+        skipEmptyLines: true,
+        complete: function(results) {
+            console.log("Parsed Data:", results.data); // Debugging line
+
+            const cleanData = results.data.filter(row => row.timestamp);
+            const labels = cleanData.map(row => row.timestamp);
+            const counts = cleanData.map(row => row.node_count);
+            const percentages = cleanData.map(row => row.percentage);
+
+            if (labels.length > 0) {
+                document.getElementById('last-updated').innerHTML = 
+                    `Last Scrape: ${labels[labels.length-1]} | Nodes: ${counts[counts.length-1]}`;
                 
-                // Extracting our three columns
-                const labels = cleanData.map(row => row.timestamp);
-                const counts = cleanData.map(row => row.node_count);
-                const percentages = cleanData.map(row => row.percentage);
-
-                // Show the last update time on the page
-                if (labels.length > 0) {
-                    const lastUpdate = labels[labels.length - 1];
-                    const lastCount = counts[counts.length - 1];
-                    const lastPercent = percentages[percentages.length - 1];
-                    document.getElementById('last-updated').innerHTML = 
-                        `Last Scrape: <strong>${lastUpdate}</strong> | Current Nodes: <strong>${lastCount}</strong> (${lastPercent}%)`;
-                }
-
                 const ctx = document.getElementById('bipChart').getContext('2d');
                 new Chart(ctx, {
                     type: 'line',
@@ -50,24 +46,19 @@
                         datasets: [{
                             label: 'BIP110 Nodes',
                             data: counts,
-                            borderColor: '#f7931a', // Bitcoin Orange
-                            backgroundColor: 'rgba(247, 147, 26, 0.1)',
-                            borderWidth: 3,
-                            fill: true,
-                            tension: 0.3,
-                            pointRadius: 2
+                            borderColor: '#f7931a',
+                            fill: false
                         }]
-                    },
-                    options: {
-                        responsive: true,
-                        scales: {
-                            x: { title: { display: true, text: 'Time' } },
-                            y: { title: { display: true, text: 'Number of Nodes' } }
-                        }
                     }
                 });
+            } else {
+                document.getElementById('last-updated').innerHTML = "No data found in CSV.";
             }
-        });
-    </script>
+        },
+        error: function(err) {
+            document.getElementById('last-updated').innerHTML = "Error loading CSV: " + err;
+        }
+    });
+</script>
 </body>
 </html>
