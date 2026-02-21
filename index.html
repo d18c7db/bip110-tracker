@@ -7,72 +7,45 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <style>
+        /* Color Variables */
         :root {
-            --bg: #f8f9fa; --card: #ffffff; --text: #1a1a1a; --sub: #666; --border: #eaeaea;
+            --bg: #f8f9fa; --card: #ffffff; --text: #1a1a1a; --sub: #666; --border: #cccccc;
         }
         [data-theme="dark"] {
-            --bg: #0f1113; --card: #1c1e22; --text: #e0e0e0; --sub: #999; --border: #333;
+            --bg: #0f1113; --card: #1c1e22; --text: #e0e0e0; --sub: #999; --border: #444;
         }
-        body { font-family: sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; transition: 0.3s; }
-        .container { max-width: 900px; margin: auto; background: var(--card); padding: 30px; border-radius: 12px; border: 1px solid var(--border); }
-        .header { display: flex; justify-content: space-between; align-items: center; }
-        .stats { font-size: 0.9em; color: var(--sub); margin: 15px 0; padding: 10px; border-left: 4px solid #f7931a; background: rgba(247, 147, 26, 0.05); }
-        .info-section { margin-top: 40px; border-top: 1px solid var(--border); padding-top: 20px; line-height: 1.6; }
-        .btn { cursor: pointer; padding: 8px 16px; border-radius: 6px; border: 1px solid var(--border); background: var(--card); color: var(--text); }
-        h1, h2 { color: #f7931a; }
+
+        body { font-family: sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; transition: 0.3s; }
+        .container { max-width: 900px; margin: 20px auto; background: var(--card); padding: 25px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        
+        /* This makes the Title and Button sit side-by-side */
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #f7931a; padding-bottom: 10px; }
+        
+        .toggle-btn { 
+            padding: 10px 15px; cursor: pointer; border-radius: 8px; font-weight: bold;
+            border: 2px solid #f7931a; background: transparent; color: var(--text);
+        }
+        .toggle-btn:hover { background: #f7931a; color: white; }
+
+        .stats-box { font-size: 1.1em; color: var(--text); margin: 15px 0; padding: 15px; border-radius: 6px; background: rgba(247, 147, 26, 0.1); border: 1px solid #f7931a; }
+        .info-section { margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border); line-height: 1.6; }
+        h1, h2 { margin: 0; color: #f7931a; }
+        a { color: #f7931a; text-decoration: none; font-weight: bold; }
     </style>
 </head>
 <body>
+
     <div class="container">
-        <div class="header">
-            <h1>BIP110 Adoption Tracker</h1>
-            <button class="btn" onclick="toggleTheme()">🌓 Toggle Mode</button>
+        <div class="top-bar">
+            <h1>BIP110 Tracker</h1>
+            <button class="toggle-btn" onclick="toggleTheme()">🌓 Toggle Mode</button>
         </div>
         
-        <div id="last-updated" class="stats">Loading snapshot...</div>
-        <canvas id="bipChart"></canvas>
+        <div id="last-updated" class="stats-box">Fetching latest Bitcoin network data...</div>
+        
+        <div style="position: relative; height:400px; width:100%">
+            <canvas id="bipChart"></canvas>
+        </div>
 
         <div class="info-section">
-            <h2>About BIP110</h2>
-            <p><strong>Protecting Bitcoin's Purpose:</strong> BIP110 is a proposal to temporarily limit the size of data fields at the consensus level.</p>
-            <ul>
-                <li><strong>Correct Distorted Incentives:</strong> Addresses the misuse of the Bitcoin blockchain for arbitrary data storage.</li>
-                <li><strong>Refocus Priorities:</strong> Prioritizes Bitcoin’s utility as a global peer-to-peer monetary system.</li>
-            </ul>
-            <p>For more details, visit <a href="https://bip110.org/" style="color: #f7931a;">BIP110.org</a>.</p>
-        </div>
-    </div>
-
-    <script>
-        function toggleTheme() {
-            const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', theme);
-        }
-
-        Papa.parse("data.csv", {
-            download: true, header: true, skipEmptyLines: true, dynamicTyping: true,
-            complete: function(results) {
-                const labels = results.data.map(row => row.timestamp);
-                const counts = results.data.map(row => row.node_count);
-                const percentages = results.data.map(row => row.percentage);
-
-                if (labels.length > 0) {
-                    document.getElementById('last-updated').innerHTML = 
-                        `<strong>Current Snapshot:</strong> ${counts[counts.length-1]} nodes (${percentages[percentages.length-1]}%) signaling support.`;
-                    
-                    new Chart(document.getElementById('bipChart').getContext('2d'), {
-                        type: 'line',
-                        data: {
-                            labels: labels,
-                            datasets: [{
-                                label: 'BIP110 Nodes', data: counts, borderColor: '#f7931a', backgroundColor: 'rgba(247, 147, 26, 0.1)', fill: true, tension: 0.3
-                            }]
-                        },
-                        options: { responsive: true, scales: { y: { beginAtZero: false } } }
-                    });
-                }
-            }
-        });
-    </script>
-</body>
-</html>
+            <h2>About BIP-
