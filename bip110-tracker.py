@@ -9,23 +9,25 @@ def scrape_bip110():
     
     try:
         response = requests.get(url, headers=headers)
-        # Search for pattern: (0 nodes/0.0%)
-        # Group 1: Node Count, Group 2: Percentage
-        pattern = r"\((\d+)\s+nodes/([\d\.]+)%\)"
-        match = re.search(pattern, response.text)
-        
-        if match:
-            return match.group(1), match.group(2)
-        return None, None
+        bip_match = re.search(r"\((\d+)\s+nodes/([\d\.]+)%\)", response.text)
+        total_match = re.search(r"<span>(\d+)\s+nodes\s+as\s+of", response.text)
+
+        node_count = bip_match.group(1) if bip_match else None
+        percentage = bip_match.group(2) if bip_match else None
+        total_nodes = total_match.group(1) if total_match else None
+
+        return node_count, total_nodes, percentage
+
     except Exception as e:
         print(f"Error: {e}")
-        return None, None
+        return None, None, None
 
-node_count, percentage = scrape_bip110()
+node_count, total_nodes, percentage = scrape_bip110()
 
-if node_count:
+if node_count and total_nodes:
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
-    # Store both count and percentage in the CSV
+    
+    # Save to CSV with format: [timestamp, node_count, total_nodes, percentage]
     with open('data.csv', 'a', newline='') as f:
         writer = csv.writer(f)
-        writer.writerow([timestamp, node_count, percentage])
+        writer.writerow([timestamp, node_count, total_nodes, percentage])
