@@ -32,7 +32,7 @@ This tracker operates entirely on GitHub's infrastructure:
 | Feature | Details |
 | :--- | :--- |
 | **Data Source** | Bitnodes.io (Global Bitcoin Node Crawler) |
-| **Update Interval** | several times per day |
+| **Update Interval** | Once per day |
 | **Tech Stack** | Python, GitHub Actions, Chart.js, PapaParse |
 
 ---
