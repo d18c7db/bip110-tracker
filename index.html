@@ -69,14 +69,21 @@
         document.documentElement.setAttribute('data-theme', savedTheme);
 
         Papa.parse("./data.csv", {
-            download: true, header: true, skipEmptyLines: true, dynamicTyping: true,
+            download: true, 
+            header: true, // Crucial: maps CSV columns to row.key_name
+            skipEmptyLines: true, 
+            dynamicTyping: true,
             complete: function(results) {
+                // Filter out any rows where timestamp is missing
                 const data = results.data.filter(row => row.timestamp);
+                
+                // We specifically map only the columns we want to the chart arrays
                 const labels = data.map(row => row.timestamp);
                 const counts = data.map(row => row.node_count);
                 const percentages = data.map(row => row.percentage);
 
                 if (labels.length > 0) {
+                    // This remains the same as your original display
                     document.getElementById('last-updated').innerHTML = 
                         `<strong>Latest Data:</strong> ${counts[counts.length-1]} nodes signalling (${percentages[percentages.length-1]}% of network)`;
                     
