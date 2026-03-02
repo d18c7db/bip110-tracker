@@ -35,7 +35,7 @@
 
     <div class="container">
         <div class="top-bar">
-            <h1>BIP110 Tracker</h1>
+            <h1>BIP110 Adoption Tracker</h1>
             <button class="toggle-btn" onclick="toggleTheme()">🌓 Toggle Mode</button>
         </div>
         
@@ -85,7 +85,7 @@
                 if (labels.length > 0) {
                     // This remains the same as your original display
                     document.getElementById('last-updated').innerHTML = 
-                        `<strong>Latest Data:</strong> ${counts[counts.length-1]} nodes signalling (${percentages[percentages.length-1]}% of network)`;
+                        `<strong>Latest Data:</strong> ${counts[counts.length-1]} nodes signalling BIP110 (${percentages[percentages.length-1]}% of network) [source: bitnodes.io]`;
                     
                     const ctx = document.getElementById('bipChart').getContext('2d');
                     new Chart(ctx, {
