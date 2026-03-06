@@ -7,7 +7,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <style>
-        /* Color Variables - Adjusted to default to Dark */
+        /* Color Variables - default to Dark */
         :root {
             --bg: #ffffff; --card: #f8f9fa; --text: #1a1a1a; --sub: #666; --border: #cccccc;
         }
@@ -83,9 +83,9 @@
                 const percentages = data.map(row => row.percentage);
 
                 if (labels.length > 0) {
-                    // This remains the same as your original display
                     document.getElementById('last-updated').innerHTML = 
-                        `<strong>Latest Data:</strong> ${counts[counts.length-1]} nodes signalling BIP110 (${percentages[percentages.length-1]}% of network) [source: bitnodes.io]`;
+                        `<strong>Latest Data:</strong> ${counts[counts.length-1]} nodes signalling BIP110 (${percentages[percentages.length-1]}% of network)<br>
+                        [source: bitnodes.io - multi-day bitnodes.io outage on March 4-6, 2026 is reflected in the graph]`;
                     
                     const ctx = document.getElementById('bipChart').getContext('2d');
                     new Chart(ctx, {
